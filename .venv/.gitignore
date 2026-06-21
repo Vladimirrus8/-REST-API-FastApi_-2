@@ -1,0 +1,223 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Виртуальное окружение
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+venv*/
+.env/
+.virtualenv/
+
+# Переменные окружения и секреты
+.env
+.env.local
+.env.*.local
+*.env
+*.env.local
+.env.production
+.env.development
+.env.test
+*.secret
+*.key
+*.pem
+*.crt
+*.p12
+
+# IDE и редакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.idea/
+*.iml
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Логи
+logs/
+*.log
+log/
+*.log.*
+
+# Базы данных
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+*.pgsql
+postgres_data/
+
+# Docker
+docker-compose.override.yml
+*.pid
+*.pid.lock
+*.lock
+
+# Тесты
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.cover
+*.coverage
+coverage.xml
+
+# Бэкапы и временные файлы
+*.tmp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.swp
+*.swo
+*~
+
+# Файлы с приватными ключами/сертификатами
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Файлы с конфиденциальными данными
+secrets/
+secrets.*
+private/
+private.*
+config/local.*.json
+config/local.*.yaml
+config/local.*.yml
+
+# SQLAlchemy миграции (если используете Alembic)
+alembic/versions/*.py
+!alembic/versions/__init__.py
+
+# Журналы отладки
+debug.log
+error.log
+info.log
+
+# Python coverage
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+
+# mypy
+.mypy_cache/
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Автоматически создаваемые файлы
+.pytest_cache/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Локальные конфиги
+config.local.py
+local_settings.py
+.env.local
+
+# Докер-образы
+*.tar
+*.tar.gz
+*.docker
+
+# Файлы с данными пользователей
+*.xlsx
+*.csv
+*.json
+!example.json
+!sample.json
+
+# Временные файлы утилит
+*.session.sql
+*.sqlite-journal
+
+# Python Cache
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Рабочие файлы редакторов
+.vscode/
+.idea/
+*.sublime-*
+*.sw?
+.#*
+*#
+*~
+*.orig
+*.rej
+
+# Логи приложения
+*.log
+access.log
+error.log
+
+# Файлы данных
+*.data
+*.dump
+*.backup
+*.pgdump
+*.sql.gz
+*.sql.bz2
+
+# Конфигурации с секретами
+config.json
+secrets.json
+credentials.json
+service-account.json
+*.secret.yaml
+*.secret.yml
