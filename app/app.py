@@ -24,8 +24,8 @@ from services import (
 from config import config
 
 app = FastAPI(
-    title="Advertisement Service",
-    description="Сервис объявлений купли/продажи с авторизацией",
+    title="Сервис объявлений",
+    description="Сервис объявлений купли/продажи с авторизацией и системой ролей",
     version="2.0.0",
     lifespan=lifespan
 )
@@ -47,14 +47,17 @@ SessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
 @app.post("/login", response_model=schemas.LoginResponse, summary="Вход в систему")
 async def login(
-        login_data: schemas.LoginRequest,
-        session: SessionDep
+    login_data: schemas.LoginRequest,
+    session: SessionDep
 ):
+    """
+    Авторизация пользователя и получение JWT токена
+    """
     user = await auth.authenticate_user(session, login_data.username, login_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Неверное имя пользователя или пароль",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -75,8 +78,8 @@ async def login(
 
 @app.post("/user", response_model=schemas.CreateUserResponse, summary="Создать пользователя", status_code=201)
 async def create_user(
-        user_data: schemas.CreateUserRequest,
-        session: SessionDep
+    user_data: schemas.CreateUserRequest,
+    session: SessionDep
 ):
     new_user = await auth.create_user(session, user_data)
     return schemas.CreateUserResponse(**new_user.to_dict())
@@ -84,25 +87,25 @@ async def create_user(
 
 @app.get("/user/{user_id}", response_model=schemas.GetUserResponse, summary="Получить пользователя по ID")
 async def get_user_by_id(
-        user_id: int,
-        session: SessionDep,
-        current_user: Optional[models.User] = Depends(get_current_user)
+    user_id: int,
+    session: SessionDep,
+    current_user: Optional[models.User] = Depends(get_current_user)
 ):
     user = await auth.get_user_by_id(session, user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id {user_id} not found"
+            detail=f"Пользователь с ID {user_id} не найден"
         )
     return schemas.GetUserResponse(**user.to_dict())
 
 
 @app.patch("/user/{user_id}", response_model=schemas.GetUserResponse, summary="Обновить пользователя")
 async def update_user_by_id(
-        user_id: int,
-        update_data: schemas.UpdateUserRequest,
-        session: SessionDep,
-        current_user: models.User = Depends(get_current_active_user)
+    user_id: int,
+    update_data: schemas.UpdateUserRequest,
+    session: SessionDep,
+    current_user: models.User = Depends(get_current_active_user)
 ):
     updated_user = await auth.update_user(session, user_id, update_data, current_user)
     return schemas.GetUserResponse(**updated_user.to_dict())
@@ -110,9 +113,9 @@ async def update_user_by_id(
 
 @app.delete("/user/{user_id}", response_model=schemas.OKResponse, summary="Удалить пользователя")
 async def delete_user_by_id(
-        user_id: int,
-        session: SessionDep,
-        current_user: models.User = Depends(get_current_active_user)
+    user_id: int,
+    session: SessionDep,
+    current_user: models.User = Depends(get_current_active_user)
 ):
     await auth.delete_user(session, user_id, current_user)
     return schemas.OKResponse()
@@ -120,34 +123,31 @@ async def delete_user_by_id(
 
 # Объявления
 
-@app.post("/advertisement", response_model=schemas.CreateAdvertisementResponse, summary="Создать объявление",
-          status_code=201)
+@app.post("/advertisement", response_model=schemas.CreateAdvertisementResponse, summary="Создать объявление", status_code=201)
 async def create_advertisement(
-        ad_data: schemas.CreateAdvertisementRequest,
-        session: SessionDep,
-        current_user: models.User = Depends(get_current_active_user)
+    ad_data: schemas.CreateAdvertisementRequest,
+    session: SessionDep,
+    current_user: models.User = Depends(get_current_active_user)
 ):
     new_ad = await add_advertisement(session, models.Advertisement, ad_data, current_user.id)
     return schemas.CreateAdvertisementResponse(id=new_ad.id, user_id=new_ad.user_id)
 
 
-@app.get("/advertisement/{advertisement_id}", response_model=schemas.GetAdvertisementResponse,
-         summary="Получить объявление по ID")
+@app.get("/advertisement/{advertisement_id}", response_model=schemas.GetAdvertisementResponse, summary="Получить объявление по ID")
 async def get_advertisement_by_id(
-        advertisement_id: int,
-        session: SessionDep
+    advertisement_id: int,
+    session: SessionDep
 ):
     ad = await get_advertisement(session, models.Advertisement, advertisement_id)
     return schemas.GetAdvertisementResponse(**ad.to_dict())
 
 
-@app.patch("/advertisement/{advertisement_id}", response_model=schemas.UpdateAdvertisementResponse,
-           summary="Обновить объявление")
+@app.patch("/advertisement/{advertisement_id}", response_model=schemas.UpdateAdvertisementResponse, summary="Обновить объявление")
 async def update_advertisement_by_id(
-        advertisement_id: int,
-        update_data: schemas.UpdateAdvertisementRequest,
-        session: SessionDep,
-        current_user: models.User = Depends(get_current_active_user)
+    advertisement_id: int,
+    update_data: schemas.UpdateAdvertisementRequest,
+    session: SessionDep,
+    current_user: models.User = Depends(get_current_active_user)
 ):
     updated_ad = await update_advertisement(
         session,
@@ -161,9 +161,9 @@ async def update_advertisement_by_id(
 
 @app.delete("/advertisement/{advertisement_id}", response_model=schemas.OKResponse, summary="Удалить объявление")
 async def delete_advertisement_by_id(
-        advertisement_id: int,
-        session: SessionDep,
-        current_user: models.User = Depends(get_current_active_user)
+    advertisement_id: int,
+    session: SessionDep,
+    current_user: models.User = Depends(get_current_active_user)
 ):
     await delete_advertisement(session, models.Advertisement, advertisement_id, current_user)
     return schemas.OKResponse()
@@ -171,12 +171,12 @@ async def delete_advertisement_by_id(
 
 @app.get("/advertisement", response_model=list[schemas.GetAdvertisementResponse], summary="Поиск объявлений")
 async def search_advertisements_by_fields(
-        session: SessionDep,
-        title: Optional[str] = Query(None, description="Поиск по заголовку (частичное совпадение)"),
-        description: Optional[str] = Query(None, description="Поиск по описанию (частичное совпадение)"),
-        price_min: Optional[float] = Query(None, description="Минимальная цена", gt=0),
-        price_max: Optional[float] = Query(None, description="Максимальная цена", gt=0),
-        author: Optional[str] = Query(None, description="Поиск по автору (частичное совпадение)")
+    session: SessionDep,
+    title: Optional[str] = Query(None, description="Поиск по заголовку (частичное совпадение)"),
+    description: Optional[str] = Query(None, description="Поиск по описанию (частичное совпадение)"),
+    price_min: Optional[float] = Query(None, description="Минимальная цена", gt=0),
+    price_max: Optional[float] = Query(None, description="Максимальная цена", gt=0),
+    author: Optional[str] = Query(None, description="Поиск по автору (частичное совпадение)")
 ):
     filters = {}
     if title:

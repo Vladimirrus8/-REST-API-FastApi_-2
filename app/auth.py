@@ -85,7 +85,7 @@ async def create_user(
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"User with username '{user_data.username}' already exists"
+            detail=f"Пользователь с именем '{user_data.username}' уже существует"
         )
 
     # Хешируем пароль
@@ -115,20 +115,18 @@ async def update_user(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id {user_id} not found"
+            detail=f"Пользователь с ID {user_id} не найден"
         )
 
     # Проверяем права: пользователь может обновлять только себя,
     if current_user.group != "admin" and current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You can only update your own profile"
+            detail="Вы можете обновлять только свои данные"
         )
 
-    # Обновляем поля
     update_dict = update_data.model_dump(exclude_unset=True)
 
-    # Если обновляется пароль, хешируем его
     if "password" in update_dict:
         update_dict["hashed_password"] = get_password_hash(update_dict.pop("password"))
 
@@ -150,14 +148,14 @@ async def delete_user(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id {user_id} not found"
+            detail=f"Пользователь с ID {user_id} не найден"
         )
 
     # Проверяем права: пользователь может удалять только себя,
     if current_user.group != "admin" and current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You can only delete your own profile"
+            detail="Вы можете удалять только свои данные"
         )
 
     await session.delete(user)

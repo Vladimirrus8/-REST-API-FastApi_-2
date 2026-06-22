@@ -35,13 +35,13 @@ async def get_current_user(
         if user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
+                detail="Не удалось проверить учетные данные",
                 headers={"WWW-Authenticate": "Bearer"},
             )
     except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Не удалось проверить учетные данные",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -49,7 +49,7 @@ async def get_current_user(
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Не удалось проверить учетные данные",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -62,7 +62,7 @@ async def get_current_active_user(
     if current_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
+            detail="Требуется авторизация",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return current_user
@@ -74,6 +74,6 @@ async def get_current_admin_user(
     if current_user.group != models.UserGroup.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin privileges required"
+            detail="Требуются права администратора"
         )
     return current_user

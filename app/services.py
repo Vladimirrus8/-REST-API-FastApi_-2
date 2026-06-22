@@ -16,7 +16,6 @@ async def add_advertisement(
         item_data: schemas.CreateAdvertisementRequest,
         user_id: int
 ) -> models.Advertisement:
-
     # Создаем объявление с привязкой к пользователю
     new_item = orm_model(
         **item_data.model_dump(),
@@ -32,7 +31,7 @@ async def add_advertisement(
         if isinstance(e.orig, UniqueViolationError) and e.orig.pgcode == '23505':
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Advertisement with such data already exists."
+                detail="Объявление с такими данными уже существует"
             )
         else:
             raise e
@@ -49,7 +48,7 @@ async def get_advertisement(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Advertisement with id {item_id} not found"
+            detail=f"Объявление с ID {item_id} не найдено"
         )
     return item
 
@@ -63,14 +62,14 @@ async def update_advertisement(
 ) -> models.Advertisement:
     item = await get_advertisement(session, orm_model, item_id)
 
-    # Проверка прав: админ может обновлять любые объявления,
+    # Проверка прав: админ может обновлять любые объявления
     if current_user.group != models.UserGroup.ADMIN and item.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You can only update your own advertisements"
+            detail="Вы можете обновлять только свои объявления"
         )
 
-    # Преобразуем update_data в словарь, исключая поля со значением None
+    # Преобразуем update_data в словарь
     update_dict = update_data.model_dump(exclude_unset=True)
 
     for key, value in update_dict.items():
@@ -89,11 +88,11 @@ async def delete_advertisement(
 ) -> None:
     item = await get_advertisement(session, orm_model, item_id)
 
-    # Проверка прав: админ может удалять любые объявления,
+    # Проверка прав: админ может удалять любые объявления
     if current_user.group != models.UserGroup.ADMIN and item.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You can only delete your own advertisements"
+            detail="Вы можете удалять только свои объявления"
         )
 
     await session.delete(item)
